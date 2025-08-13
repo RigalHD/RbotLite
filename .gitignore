@@ -1,0 +1,11 @@
+.vscode/
+__pycache__/
+*.egg-info/
+.ruff_cache/
+.venv/
+venv/
+.mypy_cache/
+
+.env
+.pyc
+.db
