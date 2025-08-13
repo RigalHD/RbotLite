@@ -8,7 +8,7 @@ requires-python = ">=3.10"
 version = "1.0.0"
 readme = 'README.md'
 dependencies = [
-    "disnake==2.10.1",
+    "discord.py==2.5.2",
     "python-dotenv==1.1.0"
 ]
 
@@ -71,4 +71,4 @@ warn_no_return = true
 files = ["."]
 
 [project.scripts]
-rbot = "rbot.bootstrap.entrypoint:discord_bot"
+rbot = "rbot.bootstrap.cli:main"

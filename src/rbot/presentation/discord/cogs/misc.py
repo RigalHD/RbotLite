@@ -1,20 +1,19 @@
-from disnake import Embed
-from disnake.interactions import AppCmdInter
-from disnake.ext import commands
-from disnake.ext.commands import Bot
+from discord import Embed, Interaction, app_commands
+from discord.ext import commands
+from discord.ext.commands import Bot
 
 
 class Misc(commands.Cog):
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
 
-    @commands.slash_command(
+    @commands.command(
         name="n_calc",
         description="Рассчитает ваши координаты в аду",
     )
     async def n_calc(
         self,
-        interaction: AppCmdInter,
+        interaction: Interaction,
         x: int,
         z: int,
         to_overworld: bool = False,
@@ -32,6 +31,21 @@ class Misc(commands.Cog):
 
         await interaction.send(embed=Embed(title=message, description=result, color=0x0066FF))
 
+    @app_commands.command(name="ping")
+    async def ping(self, inter: Interaction) -> None:
+        await inter.response.send_message("Pong!")
 
-def setup(bot: Bot) -> None:
-    bot.add_cog(Misc(bot))
+    @commands.hybrid_command()
+    @commands.is_owner()
+    async def sync(self, inter: Interaction) -> None:
+        await inter.message.reply("Синхронизация идет...")
+        await self.bot.tree.sync(guild=inter.guild)
+        await inter.message.reply("Успех")
+
+    @commands.Cog.listener()
+    async def on_ready(self) -> None:
+        print("Бот готов")
+
+
+async def setup(bot: Bot) -> None:
+    await bot.add_cog(Misc(bot))
