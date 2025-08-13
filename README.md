@@ -9,6 +9,6 @@ RBOT_TOKEN=
 ## Запуск проекта
 
 ```cmd
-python3 src/rbot/bootstrap/entrypoint/discord_bot.py
+rbot run discord_bot
 ```
 
