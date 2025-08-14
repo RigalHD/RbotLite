@@ -7,7 +7,7 @@ class Misc(commands.Cog):
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
 
-    @commands.command(
+    @commands.hybrid_command(
         name="n_calc",
         description="Рассчитает ваши координаты в аду",
     )
@@ -35,7 +35,7 @@ class Misc(commands.Cog):
     async def ping(self, inter: Interaction) -> None:
         await inter.response.send_message("Pong!")
 
-    @commands.hybrid_command()
+    @commands.command()
     @commands.is_owner()
     async def sync(self, inter: Interaction) -> None:
         await inter.message.reply("Синхронизация идет...")
