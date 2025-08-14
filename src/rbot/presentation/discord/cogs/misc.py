@@ -23,13 +23,15 @@ class Misc(commands.Cog):
             x_nether = round(x / 8)
             z_nether = round(z / 8)
             result = f"x = {x_nether} | z = {z_nether}"
+            color = 0xff0000
         else:
             message = "Координаты по обычному миру:"
             x_overworld = round(x / 8)
             z_overworld = round(z / 8)
             result = f"x = {x_overworld} | z = {z_overworld}"
+            color = 0x14ab00
 
-        await interaction.send(embed=Embed(title=message, description=result, color=0x0066FF))
+        await interaction.send(embed=Embed(title=message, description=result, color=color))
 
     @app_commands.command(name="ping")
     async def ping(self, inter: Interaction) -> None:
