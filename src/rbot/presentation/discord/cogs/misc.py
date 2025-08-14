@@ -39,7 +39,7 @@ class Misc(commands.Cog):
     @commands.is_owner()
     async def sync(self, inter: Interaction) -> None:
         await inter.message.reply("Синхронизация идет...")
-        await self.bot.tree.sync(guild=inter.guild)
+        await self.bot.tree.sync()
         await inter.message.reply("Успех")
 
     @commands.Cog.listener()
