@@ -16,7 +16,7 @@ class Misc(commands.Cog):
     @app_commands.describe(
         x="Координата x",
         z="Координата z",
-        to_overworld="Конвертировать координаты в верхний мир",
+        to_overworld="Если True - конвертирует адские координаты в координаты верхнего мира",
     )
     async def n_calc(
         self,
@@ -33,15 +33,12 @@ class Misc(commands.Cog):
             color = 0xFF0000
         else:
             message = "Координаты по обычному миру:"
-            x_overworld = round(x / 8)
-            z_overworld = round(z / 8)
+            x_overworld = x * 8
+            z_overworld = z * 8
             result = f"x = {x_overworld} | z = {z_overworld}"
             color = 0x14AB00
 
-        if interaction.message:
-            await interaction.message.reply(embed=Embed(title=message, description=result, color=color))
-        else:
-            await interaction.user.send(embed=Embed(title=message, description=result, color=color))
+        await interaction.response.send_message(embed=Embed(title=message, description=result, color=color))
 
     @app_commands.command(name="ping", description="Проверка отклика бота")
     async def ping(self, interaction: Interaction) -> None:
