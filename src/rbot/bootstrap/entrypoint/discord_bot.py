@@ -1,4 +1,5 @@
 import asyncio
+import logging
 import os
 from pathlib import Path
 
@@ -9,7 +10,17 @@ from dotenv import load_dotenv
 
 async def main(_argv: list[str] | None = None) -> None:
     load_dotenv(".env")
-
+    
+    logger = logging.getLogger()
+    logger.setLevel(logging.INFO)
+    
+    formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+    
+    console_handler = logging.StreamHandler()
+    console_handler.setFormatter(formatter)
+    
+    logger.addHandler(console_handler)
+    
     bot = Bot(
         command_prefix="!!",
         activity=Game("NewSide"),

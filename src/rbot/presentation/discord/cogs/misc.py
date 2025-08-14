@@ -1,6 +1,8 @@
+import logging
+
 from discord import Embed, Interaction, app_commands
 from discord.ext import commands
-from discord.ext.commands import Bot
+from discord.ext.commands import Bot, Context
 
 
 class Misc(commands.Cog):
@@ -9,7 +11,7 @@ class Misc(commands.Cog):
 
     @commands.hybrid_command(
         name="n_calc",
-        description="Рассчитает ваши координаты в аду",
+        description="Рассчитает ваши координаты в аду или обычном мире",
     )
     async def n_calc(
         self,
@@ -23,30 +25,40 @@ class Misc(commands.Cog):
             x_nether = round(x / 8)
             z_nether = round(z / 8)
             result = f"x = {x_nether} | z = {z_nether}"
-            color = 0xff0000
+            color = 0xFF0000
         else:
             message = "Координаты по обычному миру:"
             x_overworld = round(x / 8)
             z_overworld = round(z / 8)
             result = f"x = {x_overworld} | z = {z_overworld}"
-            color = 0x14ab00
+            color = 0x14AB00
 
         await interaction.send(embed=Embed(title=message, description=result, color=color))
 
-    @app_commands.command(name="ping")
+    @app_commands.command(name="ping", description="Проверка отклика бота")
     async def ping(self, inter: Interaction) -> None:
         await inter.response.send_message("Pong!")
 
     @commands.command()
     @commands.is_owner()
-    async def sync(self, inter: Interaction) -> None:
-        await inter.message.reply("Синхронизация идет...")
+    async def sync(self, ctx: Context) -> None:
+        await ctx.message.reply("Синхронизация идет...")
         await self.bot.tree.sync()
-        await inter.message.reply("Успех")
+        await ctx.message.reply("Успех")
+
+    @commands.command()
+    @commands.is_owner()
+    async def emergency_shutdown(self, ctx: Context) -> None:
+        await ctx.message.reply("Экстренное выключение...")
+        message = f"Бот остановлен командой пользователя {ctx.author.id}"
+        
+        await self.bot.close()
+        logging.info(message)
 
     @commands.Cog.listener()
     async def on_ready(self) -> None:
-        print("Бот готов")
+        message = f"Бот успешно запущен {self.bot.user}"
+        logging.info(message)
 
 
 async def setup(bot: Bot) -> None:
