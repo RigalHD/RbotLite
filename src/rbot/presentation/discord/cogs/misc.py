@@ -9,9 +9,14 @@ class Misc(commands.Cog):
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
 
-    @commands.hybrid_command(
+    @app_commands.command(
         name="n_calc",
         description="Рассчитает ваши координаты в аду или обычном мире",
+    )
+    @app_commands.describe(
+        x="Координата x",
+        z="Координата z",
+        to_overworld="Конвертировать координаты в верхний мир",
     )
     async def n_calc(
         self,
@@ -33,25 +38,28 @@ class Misc(commands.Cog):
             result = f"x = {x_overworld} | z = {z_overworld}"
             color = 0x14AB00
 
-        await interaction.send(embed=Embed(title=message, description=result, color=color))
+        if interaction.message:
+            await interaction.message.reply(embed=Embed(title=message, description=result, color=color))
+        else:
+            await interaction.user.send(embed=Embed(title=message, description=result, color=color))
 
     @app_commands.command(name="ping", description="Проверка отклика бота")
-    async def ping(self, inter: Interaction) -> None:
-        await inter.response.send_message("Pong!")
+    async def ping(self, interaction: Interaction) -> None:
+        await interaction.response.send_message("Pong!")
 
     @commands.command()
     @commands.is_owner()
-    async def sync(self, ctx: Context) -> None:
-        await ctx.message.reply("Синхронизация идет...")
+    async def sync(self, ctx: Context[Bot]) -> None:
+        await ctx.reply("Синхронизация идет...")
         await self.bot.tree.sync()
-        await ctx.message.reply("Успех")
+        await ctx.reply("Успех")
 
     @commands.command()
     @commands.is_owner()
-    async def emergency_shutdown(self, ctx: Context) -> None:
-        await ctx.message.reply("Экстренное выключение...")
+    async def emergency_shutdown(self, ctx: Context[Bot]) -> None:
+        await ctx.reply("Экстренное выключение...")
         message = f"Бот остановлен командой пользователя {ctx.author.id}"
-        
+
         await self.bot.close()
         logging.info(message)
 

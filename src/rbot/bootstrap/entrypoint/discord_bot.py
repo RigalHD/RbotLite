@@ -10,17 +10,17 @@ from dotenv import load_dotenv
 
 async def main(_argv: list[str] | None = None) -> None:
     load_dotenv(".env")
-    
+
     logger = logging.getLogger()
     logger.setLevel(logging.INFO)
-    
+
     formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
-    
+
     console_handler = logging.StreamHandler()
     console_handler.setFormatter(formatter)
-    
+
     logger.addHandler(console_handler)
-    
+
     bot = Bot(
         command_prefix="!!",
         activity=Game("NewSide"),
@@ -34,7 +34,10 @@ async def main(_argv: list[str] | None = None) -> None:
         for file in cogs_dir.glob("*.py"):
             if file.name != "__init__.py":
                 await bot.load_extension(f"rbot.presentation.discord.cogs.{file.stem}")
-        await bot.start(os.getenv("RBOT_TOKEN"))
+        if token := os.getenv("RBOT_TOKEN"):
+            await bot.start(token)
+        else:
+            logging.critical("Токен бота не определен")
 
 
 def run_discord_bot(args: list[str] | None = None) -> None:
