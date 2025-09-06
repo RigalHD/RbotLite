@@ -1,16 +1,14 @@
 import asyncio
 import logging
-import os
 from pathlib import Path
 
 from discord import Game, Intents, Status
 from discord.ext.commands import Bot
-from dotenv import load_dotenv
+
+from rbot.infrastracture.config_loader import Config
 
 
 async def main(_argv: list[str] | None = None) -> None:
-    load_dotenv(".env")
-
     logger = logging.getLogger()
     logger.setLevel(logging.INFO)
 
@@ -26,18 +24,18 @@ async def main(_argv: list[str] | None = None) -> None:
         activity=Game("NewSide"),
         intents=Intents.all(),
         status=Status.idle,
-        test_guilds=[1097125882876923954, 1117027821827670089, 1147831863054979072],
     )
 
+    config = Config.load_from_env()
+
     cogs_dir = Path(__file__).parent.parent.parent / "presentation" / "discord" / "cogs"
+
     async with bot:
         for file in cogs_dir.glob("*.py"):
             if file.name != "__init__.py":
                 await bot.load_extension(f"rbot.presentation.discord.cogs.{file.stem}")
-        if token := os.getenv("RBOT_TOKEN"):
-            await bot.start(token)
-        else:
-            logging.critical("Токен бота не определен")
+
+        await bot.start(config.discord.bot_token)
 
 
 def run_discord_bot(args: list[str] | None = None) -> None:

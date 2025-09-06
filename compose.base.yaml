@@ -1,0 +1,6 @@
+services:
+  discord-bot:
+    container_name: rbot-lite
+    build:
+      context: .
+    command: [ "rbot", "run", "bot" ]

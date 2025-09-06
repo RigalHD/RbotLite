@@ -14,7 +14,7 @@ def main(argv: list[str] | None = None) -> None:
     run_parser = subparsers.add_parser("run")
     run_subparsers = run_parser.add_subparsers(dest="service", required=True)
 
-    run_discord_bot_parser = run_subparsers.add_parser("discord_bot")
+    run_discord_bot_parser = run_subparsers.add_parser("bot")
     run_discord_bot_parser.set_defaults(func=lambda _: run_discord_bot(argv))
 
     args = parser.parse_args(argv)

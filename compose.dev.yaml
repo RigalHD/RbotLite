@@ -1,0 +1,7 @@
+services:
+  discord-bot:
+    extends:
+      file: compose.base.yaml
+      service: discord-bot
+    env_file:
+      - "./.config/dev/.env.dev"
