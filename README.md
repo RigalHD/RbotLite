@@ -1,13 +1,23 @@
 # RbotLite (Очень маленький discord бот)
-Перед запуском нужно создать файл .env в корне проета
+Перед запуском нужно создать файл аналогичный с `.config/.env.example`
+- `.config/dev/.env.dev` для разработки
+- `.config/prod/.env.prod` для продакшна
 
-```
-RBOT_TOKEN=
+## Установка проекта
+
+```cmd
+pip install uv
+uv pip install -e .
 ```
 
 ## Запуск проекта
 
+### Разработка
 ```cmd
-rbot run discord_bot
+just dev
 ```
 
+### Продакшн
+```cmd
+just prod
+```
