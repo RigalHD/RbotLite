@@ -2,8 +2,8 @@ import asyncio
 import logging
 from pathlib import Path
 
-from discord import Game, Intents, Status
-from discord.ext.commands import Bot
+from disnake import Game, Intents, Status
+from disnake.ext.commands import Bot
 
 from rbot.infrastracture.config_loader import Config
 
@@ -30,12 +30,15 @@ async def main(_argv: list[str] | None = None) -> None:
 
     cogs_dir = Path(__file__).parent.parent.parent / "presentation" / "discord_bot" / "cogs"
 
-    async with bot:
+    try:
         for file in cogs_dir.glob("*.py"):
             if file.name != "__init__.py":
-                await bot.load_extension(f"rbot.presentation.discord_bot.cogs.{file.stem}")
+                bot.load_extension(f"rbot.presentation.discord_bot.cogs.{file.stem}")
 
         await bot.start(config.discord.bot_token)
+    finally:
+        if not bot.is_closed():
+            await bot.close()
 
 
 def run_discord_bot(args: list[str] | None = None) -> None:
