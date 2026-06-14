@@ -3,4 +3,5 @@ services:
     container_name: rbot-lite
     build:
       context: .
+    restart: unless-stopped
     command: [ "rbot", "run", "bot" ]

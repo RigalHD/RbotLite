@@ -20,7 +20,7 @@ check:
 
 prod:
     just prod-down
-    docker compose -f compose.prod.yaml up --build
+    docker compose -f compose.prod.yaml up --build -d
 
 prod-down:
     docker compose -f compose.prod.yaml down
