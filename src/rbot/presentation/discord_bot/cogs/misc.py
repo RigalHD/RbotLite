@@ -1,29 +1,32 @@
 import logging
 
-from discord import Embed, Interaction, app_commands
-from discord.ext import commands
-from discord.ext.commands import Bot, Context
+from disnake import Embed
+from disnake.ext import commands
+from disnake.ext.commands import Bot, Context
+from disnake.interactions import ApplicationCommandInteraction
+
+X_COORDINATE_PARAM = commands.Param(description="Координата x")
+Z_COORDINATE_PARAM = commands.Param(description="Координата z")
+TO_OVERWORLD_PARAM = commands.Param(
+    default=False,
+    description="Если True - конвертирует адские координаты в координаты верхнего мира",
+)
 
 
 class Misc(commands.Cog):
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
 
-    @app_commands.command(
+    @commands.slash_command(
         name="n_calc",
         description="Рассчитает ваши координаты в аду или обычном мире",
     )
-    @app_commands.describe(
-        x="Координата x",
-        z="Координата z",
-        to_overworld="Если True - конвертирует адские координаты в координаты верхнего мира",
-    )
     async def n_calc(
         self,
-        interaction: Interaction,
-        x: int,
-        z: int,
-        to_overworld: bool = False,
+        interaction: ApplicationCommandInteraction[Bot],
+        x: int = X_COORDINATE_PARAM,
+        z: int = Z_COORDINATE_PARAM,
+        to_overworld: bool = TO_OVERWORLD_PARAM,
     ) -> None:
         if not to_overworld:
             message = "Координаты по аду:"
@@ -42,16 +45,14 @@ class Misc(commands.Cog):
             embed=Embed(title=message, description=result, color=color),
         )
 
-    @app_commands.command(name="ping", description="Проверка отклика бота")
-    async def ping(self, interaction: Interaction) -> None:
+    @commands.slash_command(name="ping", description="Проверка отклика бота")
+    async def ping(self, interaction: ApplicationCommandInteraction[Bot]) -> None:
         await interaction.response.send_message("Pong!")
 
     @commands.command()
     @commands.is_owner()
     async def sync(self, ctx: Context[Bot]) -> None:
-        await ctx.reply("Синхронизация идет...")
-        await self.bot.tree.sync()
-        await ctx.reply("Успех")
+        await ctx.reply("Slash-команды синхронизируются disnake автоматически при запуске.")
 
     @commands.command()
     @commands.is_owner()
@@ -68,5 +69,5 @@ class Misc(commands.Cog):
         logging.info(message)
 
 
-async def setup(bot: Bot) -> None:
-    await bot.add_cog(Misc(bot))
+def setup(bot: Bot) -> None:
+    bot.add_cog(Misc(bot))
