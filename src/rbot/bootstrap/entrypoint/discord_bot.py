@@ -28,12 +28,12 @@ async def main(_argv: list[str] | None = None) -> None:
 
     config = Config.load_from_env()
 
-    cogs_dir = Path(__file__).parent.parent.parent / "presentation" / "discord" / "cogs"
+    cogs_dir = Path(__file__).parent.parent.parent / "presentation" / "discord_bot" / "cogs"
 
     async with bot:
         for file in cogs_dir.glob("*.py"):
             if file.name != "__init__.py":
-                await bot.load_extension(f"rbot.presentation.discord.cogs.{file.stem}")
+                await bot.load_extension(f"rbot.presentation.discord_bot.cogs.{file.stem}")
 
         await bot.start(config.discord.bot_token)
 

@@ -38,7 +38,9 @@ class Misc(commands.Cog):
             result = f"x = {x_overworld} | z = {z_overworld}"
             color = 0x14AB00
 
-        await interaction.response.send_message(embed=Embed(title=message, description=result, color=color))
+        await interaction.response.send_message(
+            embed=Embed(title=message, description=result, color=color),
+        )
 
     @app_commands.command(name="ping", description="Проверка отклика бота")
     async def ping(self, interaction: Interaction) -> None:
