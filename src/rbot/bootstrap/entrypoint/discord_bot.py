@@ -3,7 +3,7 @@ import logging
 from pathlib import Path
 
 from disnake import Game, Intents, Status
-from disnake.ext.commands import Bot
+from disnake.ext.commands import Bot, CommandSyncFlags
 
 from rbot.infrastracture.config_loader import Config
 
@@ -19,9 +19,13 @@ async def main(_argv: list[str] | None = None) -> None:
 
     logger.addHandler(console_handler)
 
+    command_sync_flags = CommandSyncFlags.default()
+    command_sync_flags.allow_command_deletion = False
+
     bot = Bot(
         command_prefix="!!",
         activity=Game("NewSide"),
+        command_sync_flags=command_sync_flags,
         intents=Intents.all(),
         status=Status.idle,
     )

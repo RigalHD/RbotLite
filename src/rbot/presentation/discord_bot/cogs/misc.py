@@ -28,6 +28,8 @@ class Misc(commands.Cog):
         z: int = Z_COORDINATE_PARAM,
         to_overworld: bool = TO_OVERWORLD_PARAM,
     ) -> None:
+        await interaction.response.defer()
+
         if not to_overworld:
             message = "Координаты по аду:"
             x_nether = round(x / 8)
@@ -41,13 +43,14 @@ class Misc(commands.Cog):
             result = f"x = {x_overworld} | z = {z_overworld}"
             color = 0x14AB00
 
-        await interaction.response.send_message(
+        await interaction.edit_original_response(
             embed=Embed(title=message, description=result, color=color),
         )
 
     @commands.slash_command(name="ping", description="Проверка отклика бота")
     async def ping(self, interaction: ApplicationCommandInteraction[Bot]) -> None:
-        await interaction.response.send_message("Pong!")
+        await interaction.response.defer()
+        await interaction.edit_original_response(content="Pong!")
 
     @commands.command()
     @commands.is_owner()
