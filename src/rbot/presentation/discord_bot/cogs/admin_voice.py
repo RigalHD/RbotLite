@@ -6,10 +6,9 @@ from disnake.ext import commands
 from disnake.ext.commands import Bot
 from disnake.interactions import ApplicationCommandInteraction, MessageInteraction
 
-GUILD_ID = 1147831863054979072
-ADMIN_ROLE_ID = 1147899870372442134
-ADMIN_VOICE_CHANNEL_ID = 1188853642690842634
-REQUEST_COOLDOWN_SECONDS = 60
+from rbot.infrastracture.config_loader import AdminVoiceConfig
+
+ADMIN_VOICE_CONFIG = AdminVoiceConfig.load_from_env()
 
 
 class AdminVoiceRequestView(ui.View):
@@ -20,7 +19,7 @@ class AdminVoiceRequestView(ui.View):
 
     async def interaction_check(self, interaction: MessageInteraction[Bot]) -> bool:
         member = interaction.author
-        if not isinstance(member, Member) or ADMIN_ROLE_ID not in {
+        if not isinstance(member, Member) or ADMIN_VOICE_CONFIG.admin_role_id not in {
             role.id for role in member.roles
         }:
             await interaction.response.send_message(
@@ -48,20 +47,21 @@ class AdminVoiceRequestView(ui.View):
             )
             return
 
+        await interaction.response.defer()
         try:
             await self.requester.move_to(
                 self.admin_voice_channel,
                 reason=f"Запрос подтверждён администратором {interaction.author}",
             )
         except HTTPException:
-            await interaction.response.send_message(
+            await interaction.followup.send(
                 "Не удалось перенести пользователя. Проверьте права бота и попробуйте снова.",
                 ephemeral=True,
             )
             return
         self.disable_buttons()
         self.stop()
-        await interaction.response.edit_message(
+        await interaction.edit_original_response(
             content=(
                 f"{self.requester.mention} перенесён в {self.admin_voice_channel.mention} "
                 f"администратором {interaction.author.mention}."
@@ -94,58 +94,64 @@ class AdminVoice(commands.Cog):
     @commands.slash_command(
         name="admin_voice",
         description="Попросить администраторов перенести вас в админский войс",
-        guild_ids=[GUILD_ID],
+        guild_ids=[ADMIN_VOICE_CONFIG.guild_id],
     )
     async def admin_voice(
         self,
         interaction: ApplicationCommandInteraction[Bot],
     ) -> None:
-        if interaction.guild_id != GUILD_ID or interaction.guild is None:
-            await interaction.response.send_message(
-                "Эта команда доступна только на основном сервере.",
-                ephemeral=True,
+        await interaction.response.defer()
+
+        if interaction.guild_id != ADMIN_VOICE_CONFIG.guild_id or interaction.guild is None:
+            await interaction.edit_original_response(
+                content="Эта команда доступна только на основном сервере.",
             )
             return
 
         author = interaction.author
         if not isinstance(author, Member) or author.voice is None:
-            await interaction.response.send_message(
-                "Сначала подключитесь к голосовому каналу.",
-                ephemeral=True,
+            await interaction.edit_original_response(
+                content="Сначала подключитесь к голосовому каналу.",
             )
             return
 
-        if author.voice.channel is not None and author.voice.channel.id == ADMIN_VOICE_CHANNEL_ID:
-            await interaction.response.send_message(
-                "Вы уже находитесь в админском голосовом канале.",
-                ephemeral=True,
+        if (
+            author.voice.channel is not None
+            and author.voice.channel.id == ADMIN_VOICE_CONFIG.channel_id
+        ):
+            await interaction.edit_original_response(
+                content="Вы уже находитесь в админском голосовом канале.",
             )
             return
 
-        admin_role = interaction.guild.get_role(ADMIN_ROLE_ID)
-        admin_voice_channel = interaction.guild.get_channel(ADMIN_VOICE_CHANNEL_ID)
+        admin_role = interaction.guild.get_role(ADMIN_VOICE_CONFIG.admin_role_id)
+        admin_voice_channel = interaction.guild.get_channel(ADMIN_VOICE_CONFIG.channel_id)
         if admin_role is None or not isinstance(admin_voice_channel, VoiceChannel):
-            await interaction.response.send_message(
-                "Не удалось найти роль администраторов или админский голосовой канал.",
-                ephemeral=True,
+            await interaction.edit_original_response(
+                content="Не удалось найти роль администраторов или админский голосовой канал.",
             )
             return
 
         now = time.monotonic()
-        retry_after = REQUEST_COOLDOWN_SECONDS - (
-            now - self.last_request_at.get(author.id, -REQUEST_COOLDOWN_SECONDS)
+        retry_after = ADMIN_VOICE_CONFIG.request_cooldown_seconds - (
+            now
+            - self.last_request_at.get(
+                author.id,
+                -ADMIN_VOICE_CONFIG.request_cooldown_seconds,
+            )
         )
         if retry_after > 0:
-            await interaction.response.send_message(
-                f"Повторный запрос можно отправить через {math.ceil(retry_after)} сек.",
-                ephemeral=True,
+            await interaction.edit_original_response(
+                content=f"Повторный запрос можно отправить через {math.ceil(retry_after)} сек.",
             )
             return
 
         self.last_request_at[author.id] = now
-        await interaction.response.send_message(
-            f"{admin_role.mention}, {author.mention} просит перенести его "
-            f"в {admin_voice_channel.mention}.",
+        await interaction.edit_original_response(
+            content=(
+                f"{admin_role.mention}, {author.mention} просит перенести его "
+                f"в {admin_voice_channel.mention}."
+            ),
             allowed_mentions=AllowedMentions(roles=[admin_role], users=[author]),
             view=AdminVoiceRequestView(author, admin_voice_channel),
         )
