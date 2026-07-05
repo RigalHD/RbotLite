@@ -21,10 +21,10 @@ class DatabaseConfig:
     @classmethod
     def load_from_env(cls: type["DatabaseConfig"]) -> "DatabaseConfig":
         return cls(
-            database=os.environ.get("POSTGRES_DB", "postgres"),
-            username=os.environ.get("POSTGRES_USER", "postgres"),
-            password=os.environ.get("POSTGRES_PASSWORD"),
-            host=os.environ.get("POSTGRES_HOST", "localhost"),
+            database=os.environ.get("POSTGRES_DATABASE", "postgres"),
+            username=os.environ.get("POSTGRES_USERNAME", "postgres"),
+            password=os.environ.get("POSTGRES_PASSWORD", "postgres"),
+            host=os.environ.get("POSTGRES_HOST", "db"),
             port=int(os.environ.get("POSTGRES_PORT", "5432")),
             debug=str_to_bool(os.environ.get("DB_DEBUG", "false")),
         )
