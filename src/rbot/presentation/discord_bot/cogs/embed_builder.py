@@ -4,7 +4,7 @@ from disnake.ext.commands import Bot
 from disnake.flags import InteractionContextTypes
 from disnake.interactions import ApplicationCommandInteraction
 
-from rbot.presentation.discord_bot.embed_builder import EmbedEditorModal, parse_color
+from rbot.presentation.discord_bot.embed_builder import EmbedSetupView, parse_color
 
 DEFAULT_EMBED_COLOR = "#00A2FF"
 
@@ -48,8 +48,11 @@ class EmbedBuilder(commands.Cog):
             )
             return
 
-        await interaction.response.send_modal(
-            EmbedEditorModal(author.id, channel, parsed_color),
+        view = EmbedSetupView(author.id, channel, parsed_color)
+        await interaction.response.send_message(
+            view.build_summary(),
+            view=view,
+            ephemeral=True,
         )
 
 
