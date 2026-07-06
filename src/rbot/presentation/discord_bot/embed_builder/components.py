@@ -20,8 +20,8 @@ EMBED_FIELD_LABELS = {
     "title": "заголовок",
     "description": "описание",
     "author": "автор",
-    "footer": "подвал",
-    "image_url": "изображение",
+    "footer": "футер",
+    "image_url": "картинка",
 }
 
 
@@ -60,8 +60,8 @@ class EmbedFieldsSelect(StringSelect[ui.View]):
                 SelectOption(label="Заголовок", value="title", default=True),
                 SelectOption(label="Описание", value="description", default=True),
                 SelectOption(label="Автор", value="author"),
-                SelectOption(label="Подвал", value="footer"),
-                SelectOption(label="Изображение", value="image_url"),
+                SelectOption(label="Футер", value="footer"),
+                SelectOption(label="Картинка", value="image_url"),
             ],
         )
 
@@ -100,9 +100,7 @@ class EmbedSetupView(ui.View):
 
     def build_summary(self) -> str:
         fields = ", ".join(
-            EMBED_FIELD_LABELS[field]
-            for field in EMBED_FIELD_LABELS
-            if field in self.fields
+            EMBED_FIELD_LABELS[field] for field in EMBED_FIELD_LABELS if field in self.fields
         )
         return (
             f"Канал: {self.channel.mention}\n"
@@ -271,7 +269,7 @@ class EmbedEditorModal(ui.Modal):
         if "image_url" in fields:
             components.append(
                 ui.Label(
-                    "Ссылка на изображение",
+                    "Ссылка на картинку",
                     ui.TextInput(
                         custom_id="image_url",
                         placeholder="https://example.com/image.png",
@@ -291,7 +289,7 @@ class EmbedEditorModal(ui.Modal):
             image_url = validate_optional_url(values.get("image_url", ""))
         except ValueError:
             await interaction.response.send_message(
-                "Ссылка на изображение должна начинаться с http:// или https://.",
+                "Ссылка на картинку должна начинаться с http:// или https://.",
                 ephemeral=True,
             )
             return

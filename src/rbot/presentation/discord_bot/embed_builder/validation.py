@@ -9,6 +9,7 @@ def parse_color(value: str) -> int:
     color = int(normalized, 16)
     if not 0 <= color <= 0xFFFFFF:
         raise ValueError
+
     return color
 
 
@@ -20,4 +21,5 @@ def validate_optional_url(value: str) -> str | None:
     parsed = urlparse(value)
     if parsed.scheme not in {"http", "https"} or not parsed.netloc:
         raise ValueError
+
     return value
