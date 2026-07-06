@@ -15,8 +15,8 @@ lint:
     ruff check --fix
     mypy
 
-check:
-    just lint
+migration MESSAGE:
+    uv run rbot migrations create "{{MESSAGE}}"
 
 prod:
     just prod-down

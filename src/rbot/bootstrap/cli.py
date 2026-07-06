@@ -26,6 +26,16 @@ def autogenerate_migration(message: str) -> None:
         next(config_path_generator)
 
 
+def create_migration(message: str) -> None:
+    config_path_generator = get_alembic_config_path()
+    config_path = str(next(config_path_generator))
+    alembic.config.main(
+        argv=["-c", config_path, "revision", "-m", message],
+    )
+    with contextlib.suppress(StopIteration):
+        next(config_path_generator)
+
+
 def main(argv: list[str] | None = None) -> None:
     if argv is None:
         argv = sys.argv[1:]
@@ -49,10 +59,19 @@ def main(argv: list[str] | None = None) -> None:
     autogenerate_parser.add_argument("message")
     autogenerate_parser.set_defaults(
         func=lambda args: autogenerate_migration(args.message),
+        requires_database=True,
+    )
+
+    create_parser = migrations_subparsers.add_parser("create")
+    create_parser.add_argument("message")
+    create_parser.set_defaults(
+        func=lambda args: create_migration(args.message),
+        requires_database=False,
     )
 
     args = parser.parse_args(argv)
-    run_migrations()
+    if args.command == "run" or getattr(args, "requires_database", False):
+        run_migrations()
 
     if hasattr(args, "func"):
         args.func(args)
