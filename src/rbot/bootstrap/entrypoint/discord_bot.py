@@ -38,7 +38,7 @@ async def main(_argv: list[str] | None = None) -> None:
 
     try:
         await check_database_connection(database_engine)
-        logger.info("Подключение к PostgreSQL установлено")
+        logger.info("Connected to database successfully.")
 
         for file in cogs_dir.glob("*.py"):
             if file.name != "__init__.py":
