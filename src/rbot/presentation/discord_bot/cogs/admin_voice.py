@@ -100,7 +100,7 @@ class AdminVoice(commands.Cog):
         self,
         interaction: ApplicationCommandInteraction[Bot],
     ) -> None:
-        await interaction.response.defer()
+        await interaction.response.defer(ephemeral=True)
 
         if interaction.guild_id != ADMIN_VOICE_CONFIG.guild_id or interaction.guild is None:
             await interaction.edit_original_response(
