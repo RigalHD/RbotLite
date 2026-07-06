@@ -6,6 +6,7 @@ from disnake import Game, Intents, Status
 from disnake.ext.commands import Bot, CommandSyncFlags
 
 from rbot.infrastracture.config_loader import Config
+from rbot.infrastracture.database import check_database_connection, create_database_engine
 
 
 async def main(_argv: list[str] | None = None) -> None:
@@ -31,10 +32,14 @@ async def main(_argv: list[str] | None = None) -> None:
     )
 
     config = Config.load_from_env()
+    database_engine = create_database_engine(config.database)
 
     cogs_dir = Path(__file__).parent.parent.parent / "presentation" / "discord_bot" / "cogs"
 
     try:
+        await check_database_connection(database_engine)
+        logger.info("Connected to database successfully.")
+
         for file in cogs_dir.glob("*.py"):
             if file.name != "__init__.py":
                 bot.load_extension(f"rbot.presentation.discord_bot.cogs.{file.stem}")
@@ -43,6 +48,7 @@ async def main(_argv: list[str] | None = None) -> None:
     finally:
         if not bot.is_closed():
             await bot.close()
+        await database_engine.dispose()
 
 
 def run_discord_bot(args: list[str] | None = None) -> None:

@@ -1,7 +1,19 @@
 services:
+  db:
+    extends:
+      file: compose.base.yaml
+      service: db
+    env_file:
+      - "./.config/dev/.env.dev"
+    volumes:
+      - db-data:/var/lib/postgresql/data
+
   discord-bot:
     extends:
       file: compose.base.yaml
       service: discord-bot
     env_file:
       - "./.config/dev/.env.dev"
+
+volumes:
+  db-data:
