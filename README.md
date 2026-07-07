@@ -9,7 +9,7 @@ Create an `.env` file following the instructions bellow
 pip install uv
 uv pip install -e .
 ```
-### Optional dependencies:
+### Optional dependencies
 ```cmd
 uv pip install -e ".[lint]"
 ```
